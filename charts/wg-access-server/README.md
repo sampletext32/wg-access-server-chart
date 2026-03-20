@@ -16,6 +16,11 @@ Because IPv6 on Kubernetes is disabled by default in most clusters and can't be 
 
 If no admin password is set, the Chart generates a random one. You can retrieve it using `kubectl get secret ...` as prompted by helm after installing the Chart.
 
+### Metadata & Metrics
+
+- `config.enableMetadata`: Collect device metadata (last handshake, RX/TX). Required for "Last seen" in the web UI. Defaults to `false`.
+- `config.enableDeviceMetrics`: Expose device-level Prometheus metrics on `/metrics`. Defaults to `true` and only has an effect when metadata collection is enabled.
+
 ## Uninstalling the Chart
 
 To uninstall/delete the `wireguard` deployment:
@@ -69,6 +74,8 @@ ingress:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | config | object | `{}` | inline wg-access-server config ([config.yaml](https://www.freie-netze.org/wg-access-server/2-configuration/#the-config-file-configyaml)) |
+| config.enableMetadata | bool | `false` | Collect device metadata (last handshake, RX/TX). Required for "Last seen" in the web UI. |
+| config.enableDeviceMetrics | bool | `true` | Expose device-level Prometheus metrics on `/metrics` (only effective when metadata is enabled). |
 | web.config.adminUsername | string | `"admin"` |  |
 | web.config.adminPassword | string | `""` | If omitted a random password will be generated and stored in the secret |
 | web.service.annotations | object | `{}` |  |

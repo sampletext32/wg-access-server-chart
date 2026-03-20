@@ -2,8 +2,10 @@
 config:
   # The global log level
   logLevel: info
-  # Turn off collection of device metadata logging. Includes last handshake time and RX/TX bytes only.
-  disableMetadata: false
+  # Collect device metadata logging (last handshake, RX/TX). Required for "Last seen" in the UI.
+  enableMetadata: false
+  # Expose device-level Prometheus metrics on /metrics. Requires enableMetadata to be effective.
+  enableDeviceMetrics: true
   # Enable/Disable the automatic deletion of inactive devices.
   enableInactiveDeviceDeletion: false
   # The duration after which inactive devices are automatically deleted, if automatic deletion is enabled. A device is inactive if it has not been connected to the server for longer than the inactive device grace period. The duration format is the go duration string format
