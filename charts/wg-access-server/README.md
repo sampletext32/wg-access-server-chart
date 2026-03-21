@@ -20,6 +20,7 @@ If no admin password is set, the Chart generates a random one. You can retrieve 
 
 - `config.enableMetadata`: Collect device metadata (last handshake, RX/TX). Required for "Last seen" in the web UI. Defaults to `false`.
 - `config.enableDeviceMetrics`: Expose device-level Prometheus metrics on `/metrics`. Defaults to `true` and only has an effect when metadata collection is enabled.
+- `config.metrics.basicAuth.username` / `config.metrics.basicAuth.passwordHash`: Protect the `/metrics` endpoint with HTTP Basic Auth (bcrypt hash). Leave empty to keep it public.
 
 ## Uninstalling the Chart
 
@@ -76,6 +77,8 @@ ingress:
 | config | object | `{}` | inline wg-access-server config ([config.yaml](https://www.freie-netze.org/wg-access-server/2-configuration/#the-config-file-configyaml)) |
 | config.enableMetadata | bool | `false` | Collect device metadata (last handshake, RX/TX). Required for "Last seen" in the web UI. |
 | config.enableDeviceMetrics | bool | `true` | Expose device-level Prometheus metrics on `/metrics` (only effective when metadata is enabled). |
+| config.metrics.basicAuth.username | string | `""` | Username required for accessing `/metrics`. Leave empty for no auth. |
+| config.metrics.basicAuth.passwordHash | string | `""` | Bcrypt hash of the password required for `/metrics`. Must be set together with the username. |
 | web.config.adminUsername | string | `"admin"` |  |
 | web.config.adminPassword | string | `""` | If omitted a random password will be generated and stored in the secret |
 | web.service.annotations | object | `{}` |  |

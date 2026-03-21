@@ -57,6 +57,12 @@ config:
     # If not provided, a self-signed certificates will be generated
     certFile: ""
     keyFile: ""
+  metrics:
+    basicAuth:
+      # Optional username to require when accessing /metrics.
+      username: ""
+      # Optional bcrypt hash for the metrics password (matches username above).
+      passwordHash: ""
 
 secretConfig:
   config: {}
