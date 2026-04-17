@@ -90,7 +90,7 @@ wireguard:
     existingSecret:
     secretRefKeys:
       privateKey: "privateKey"
-    # PrivateKey must be changed before running this in a production environment.
+    # REQUIRED: Set this value explicitly before deployment, or use existingSecret.
     privateKey: "qJvFeHHuffBaPWx4veJGQqXw6j5zdo5cSOaBd1Z0Km4="
   service:
     annotations: {}
@@ -106,7 +106,7 @@ wireguard:
 storage:
   enabled: false
   uri: ""
-  # existingSecret: ""
+  existingSecret: ""
   secretRefKeys:
     uri: "storageUri"
 
@@ -148,11 +148,12 @@ extraVolumeMounts: ""
 
 nameOverride: ""
 
-fullnameOverride:
+fullnameOverride: ""
 
-# use the host network for the application pod. Set to "true" if you want the
-# underlying K8S network to be reachable via the VPN.
-# hostNetwork: false
+# Optional Kubernetes target version override for Ingress API selection.
+kubeTargetVersionOverride: ""
+
+hostNetwork: false
 
 imagePullSecrets: []
 
