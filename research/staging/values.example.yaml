@@ -14,7 +14,7 @@ config:
   wireguard:
     enabled: true
     interface: awg0
-    mtu: 1420
+    mtu: 1360
     port: 51920
   vpn:
     allowedIPs:
