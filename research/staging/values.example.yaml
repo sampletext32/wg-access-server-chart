@@ -1,0 +1,113 @@
+replicas: 1
+nameOverride: awg-vpn-stg
+
+image:
+  repository: registry.birdegop.ru/docker/images/amnezia-wg-access-server
+  tag: amnezia-c0424e5
+  pullPolicy: IfNotPresent
+
+config:
+  loglevel: info
+  externalHost: vpn-awg-stg.birdegop.ru
+  enableMetadata: true
+  filename: AmneziaWG
+  wireguard:
+    enabled: true
+    interface: awg0
+    mtu: 1420
+    port: 51920
+  vpn:
+    allowedIPs:
+      - "0.0.0.0/0"
+    cidr: 10.90.0.0/24
+    cidrv6: 0
+  amnezia:
+    shared:
+      s1: 8
+      s2: 8
+      s3: 8
+      s4: 8
+      h1: ""
+      h2: ""
+      h3: ""
+      h4: ""
+    server:
+      headerProtectionKey: ""
+    client:
+      jc: 0
+      jmin: 0
+      jmax: 0
+      i1: ""
+      i2: ""
+      i3: ""
+      i4: ""
+      i5: ""
+      contentPaddingAddition: ""
+      rekeyAfterTime: ""
+      rekeyTimeout: ""
+      rejectAfterTime: ""
+      keepaliveTimeout: ""
+      maxHandshakeAttempts: ""
+
+web:
+  config:
+    basicAuthEnabled: true
+    existingSecret: awg-vpn-stg-secrets
+    secretRefKeys:
+      adminUsername: admin-username
+      adminPassword: admin-password
+  service:
+    type: ClusterIP
+
+wireguard:
+  config:
+    existingSecret: awg-vpn-stg-secrets
+    secretRefKeys:
+      privateKey: private-key
+  service:
+    type: LoadBalancer
+    port: 51920
+    externalTrafficPolicy: Cluster
+    annotations:
+      metallb.universe.tf/address-pool: public-ips
+      metallb.universe.tf/allow-shared-ip: birdegop-awg-stg
+
+nodeSelector:
+  topology.kubernetes.io/region: nl-amsterdam
+
+strategy:
+  type: Recreate
+
+securityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+    add:
+      - NET_ADMIN
+  seccompProfile:
+    type: RuntimeDefault
+
+storage:
+  enabled: false
+
+persistence:
+  enabled: true
+  size: 1Gi
+  accessModes:
+    - ReadWriteOnce
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - vpn-awg-stg.birdegop.ru
+  tls:
+    - hosts:
+        - vpn-awg-stg.birdegop.ru
+      secretName: vpn-awg-stg-tls

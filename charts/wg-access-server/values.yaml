@@ -11,7 +11,7 @@ config:
   # The duration after which inactive devices are automatically deleted, if automatic deletion is enabled. A device is inactive if it has not been connected to the server for longer than the inactive device grace period. The duration format is the go duration string format
   inactiveDeviceGracePeriod: 8760h
   # Change the name of the configuration file the user can download (Do not include the '.conf' extension )
-  filename: WireGuard
+  filename: AmneziaWG
   dns:
     # Enable/disable the embedded DNS proxy server. This is enabled by default and allows VPN clients to avoid DNS leaks by sending all DNS requests to wg-access-server itself.
     enabled: true
@@ -26,6 +26,33 @@ config:
     interface: wg0
     # The maximum transmission unit (MTU) to be used on the server-side interface.
     mtu: 1420
+  amnezia:
+    shared:
+      s1: 0
+      s2: 0
+      s3: 0
+      s4: 0
+      h1: ""
+      h2: ""
+      h3: ""
+      h4: ""
+    server:
+      headerProtectionKey: ""
+    client:
+      jc: 0
+      jmin: 0
+      jmax: 0
+      i1: ""
+      i2: ""
+      i3: ""
+      i4: ""
+      i5: ""
+      contentPaddingAddition: ""
+      rekeyAfterTime: ""
+      rekeyTimeout: ""
+      rejectAfterTime: ""
+      keepaliveTimeout: ""
+      maxHandshakeAttempts: ""
   vpn:
     # The VPN IPv4 network range. VPN clients will be assigned IP addresses in this range. Set to 0 to disable IPv4.
     cidr: 10.44.0.0/24
@@ -91,7 +118,7 @@ wireguard:
     secretRefKeys:
       privateKey: "privateKey"
     # REQUIRED: Set this value explicitly before deployment, or use existingSecret.
-    privateKey: "qJvFeHHuffBaPWx4veJGQqXw6j5zdo5cSOaBd1Z0Km4="
+    privateKey: ""
   service:
     annotations: {}
     type: ClusterIP
@@ -167,16 +194,20 @@ image:
 replicas: 1
 
 strategy:
-  type: ""
-  # the deployment strategy type will default to "Recreate" when persistence is enabled
-  # or "RollingUpdate" when persistence is not enabled.
-  # type: Recreate
+  type: Recreate
 
 # set securityContext for the application pod. With some kernel versions, adding the
 # 'NET_RAW' capability might be required for the iptables table to be initialized.
 securityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
   capabilities:
-    add: ['NET_ADMIN']
+    drop: ["ALL"]
+    add: ["NET_ADMIN"]
+  seccompProfile:
+    type: RuntimeDefault
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -217,3 +248,12 @@ livenessProbe:
   timeoutSeconds: 2
   successThreshold: 1
   failureThreshold: 3
+
+startupProbe:
+  httpGet:
+    path: /health
+    port: 8000
+    scheme: HTTP
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 60

@@ -8,11 +8,7 @@ metadata:
 spec:
   replicas: {{ .Values.replicas }}
   strategy:
-    {{- if .Values.persistence.enabled  }}
     type: {{ .Values.strategy.type | default "Recreate" | quote }}
-    {{- else }}
-    type: {{ .Values.strategy.type | default "RollingUpdate" | quote }}
-    {{- end }}
   selector:
     matchLabels:
       {{- include "wg-access-server.selectorLabels" . | nindent 6 }}
@@ -101,8 +97,8 @@ spec:
           volumeMounts:
             - name: tun
               mountPath: /dev/net/tun
-            - name: mods
-              mountPath: /lib/modules
+            - name: tmp
+              mountPath: /tmp
             {{- if not .Values.storage.enabled }}
             - name: data
               mountPath: /data
@@ -123,6 +119,8 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
+          startupProbe:
+            {{- toYaml .Values.startupProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
@@ -130,9 +128,8 @@ spec:
           hostPath:
             type: 'CharDevice'
             path: /dev/net/tun
-        - name: mods
-          hostPath:
-            path: /lib/modules
+        - name: tmp
+          emptyDir: {}
       {{- if not .Values.storage.enabled }}
         - name: data
         {{- if .Values.persistence.enabled }}
