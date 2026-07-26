@@ -21,6 +21,8 @@ config:
       - "0.0.0.0/0"
     cidr: 10.90.0.0/24
     cidrv6: 0
+  clientConfig:
+    mtu: 1360
   amnezia:
     shared:
       s1: 8
