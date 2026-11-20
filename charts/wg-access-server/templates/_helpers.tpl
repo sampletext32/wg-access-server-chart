@@ -121,3 +121,15 @@ Return WireGuard secretConfig Secret Name
     {{- include "wg-access-server.name" . -}}
 {{- end -}}
 {{- end -}}
+
+
+{{/*
+Return AmneziaWG header protection Secret Name
+*/}}
+{{- define "wg-access-server.amneziaSecretName" -}}
+{{- if .Values.amnezia.server.existingSecret -}}
+    {{- .Values.amnezia.server.existingSecret -}}
+{{- else -}}
+    {{- include "wg-access-server.name" . -}}
+{{- end -}}
+{{- end -}}

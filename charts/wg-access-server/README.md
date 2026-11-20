@@ -123,7 +123,13 @@ ingress:
 | wireguard.service.loadBalancerIP | string | `""` |  |
 | wireguard.service.port | int | `51820` |  |
 | wireguard.service.nodePort | int | `""` | Use available port from range 30000-32768 |
-| storage.enabled | bool | `false` |  |
+| amnezia.enabled | bool | `false` | Render an AmneziaWG profile into `config.yaml` and deliver the header protection key as a Secret. Set `config.wireguard.interface` to `awg0` and a client-facing MTU such as `1360` alongside it. `S1`-`S4` and `H1`-`H4` have to be at least 12 and must not overlap. |
+| amnezia.shared | object | zeros / empty | Values the server's interface and every client must agree on: `s1`-`s4`, `h1`-`h4`. |
+| amnezia.client | object | zeros / empty | Client-only parameters: `jc`, `jmin`, `jmax`, `i1`-`i5`, `contentPaddingAddition` and the timing values. They are written into the configuration file a user downloads, never onto the server's interface. |
+| amnezia.server.headerProtectionKey | string | `""` | 32-byte base64 key, e.g. from `awg genkey`. Required when `amnezia.enabled` is true unless `existingSecret` is set. Changing it invalidates every enrolled device. |
+| amnezia.server.existingSecret | string | `""` | Use an existing Secret for the header protection key. |
+| amnezia.server.secretRefKeys.headerProtectionKey | string | `"headerProtectionKey"` | Secret key that holds the header protection key. |
+| mountKernelModules | bool | `true` | Mount the host's `/lib/modules`. Needed when the container loads kernel modules (iptables); AmneziaWG runs in userspace and does not need it. || storage.enabled | bool | `false` |  |
 | storage.uri | string | `""` | A storage backend connection string |
 | storage.existingSecret | string | `""` | Use existing storage secret |
 | storage.secretRefKeys.uri | string | `"storageUri"` | Secret key name containing storage uri |

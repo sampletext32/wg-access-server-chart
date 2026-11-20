@@ -44,7 +44,7 @@ config:
   wireguard:
     # Enable/disable the wireguard server. Useful for development on non-linux machines.
     enabled: true
-    # The wireguard network interface name
+    # The wireguard network interface name. Use awg0 for AmneziaWG.
     interface: wg0
     # The maximum transmission unit (MTU) to be used on the server-side interface.
     mtu: 1420
@@ -155,6 +155,46 @@ wireguard:
     port: 51820
     nodePort:
 
+# AmneziaWG is the obfuscating WireGuard fork this chart's image speaks. When
+# enabled, the profile below is rendered into config.yaml and the header
+# protection key is delivered through a Secret. The shared and client values
+# have to agree with every client, so set them once and keep them: changing
+# them means every device has to be enrolled again.
+amnezia:
+  enabled: false
+  # Values the server's interface and every client must agree on.
+  shared:
+    s1: 0
+    s2: 0
+    s3: 0
+    s4: 0
+    h1: ""
+    h2: ""
+    h3: ""
+    h4: ""
+  # Values only a client configuration carries.
+  client:
+    jc: 0
+    jmin: 0
+    jmax: 0
+    i1: ""
+    i2: ""
+    i3: ""
+    i4: ""
+    i5: ""
+    contentPaddingAddition: ""
+    rekeyAfterTime: ""
+    rekeyTimeout: ""
+    rejectAfterTime: ""
+    keepaliveTimeout: ""
+    maxHandshakeAttempts: ""
+  # The header protection key stays on the server and must be stable;
+  # generate it with `awg genkey` and keep it, e.g. in an existing Secret.
+  server:
+    existingSecret: ""
+    secretRefKeys:
+      headerProtectionKey: "headerProtectionKey"
+    headerProtectionKey: ""
 storage:
   enabled: false
   uri: ""
@@ -206,6 +246,9 @@ fullnameOverride: ""
 kubeTargetVersionOverride: ""
 
 hostNetwork: false
+# Mount the host's /lib/modules. Needed when the container has to load kernel
+# modules (e.g. iptables); AmneziaWG runs in userspace and does not need it.
+mountKernelModules: true
 
 imagePullSecrets: []
 

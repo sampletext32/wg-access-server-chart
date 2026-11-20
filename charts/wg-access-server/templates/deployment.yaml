@@ -81,6 +81,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "wg-access-server.wireguardConfigSecretName" . | quote }}
                   key: {{ .Values.wireguard.config.secretRefKeys.privateKey }}
+            {{- if .Values.amnezia.enabled }}
+            - name: WG_AMNEZIA_HEADER_PROTECTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wg-access-server.amneziaSecretName" . | quote }}
+                  key: {{ .Values.amnezia.server.secretRefKeys.headerProtectionKey }}
+            {{- end }}
             {{- if .Values.web.config.basicAuthEnabled }}
             - name: WG_ADMIN_USERNAME
               valueFrom:
@@ -107,8 +114,14 @@ spec:
           volumeMounts:
             - name: tun
               mountPath: /dev/net/tun
+            {{- if .Values.mountKernelModules }}
             - name: mods
               mountPath: /lib/modules
+            {{- end }}
+            {{- if .Values.amnezia.enabled }}
+            - name: uapi
+              mountPath: /var/run/wireguard
+            {{- end }}
             {{- if not .Values.storage.enabled }}
             - name: data
               mountPath: /data
@@ -136,9 +149,15 @@ spec:
           hostPath:
             type: 'CharDevice'
             path: /dev/net/tun
+        {{- if .Values.mountKernelModules }}
         - name: mods
           hostPath:
             path: /lib/modules
+        {{- end }}
+        {{- if .Values.amnezia.enabled }}
+        - name: uapi
+          emptyDir: {}
+        {{- end }}
       {{- if not .Values.storage.enabled }}
         - name: data
         {{- if .Values.persistence.enabled }}
