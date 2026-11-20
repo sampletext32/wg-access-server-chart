@@ -81,7 +81,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "wg-access-server.wireguardConfigSecretName" . | quote }}
                   key: {{ .Values.wireguard.config.secretRefKeys.privateKey }}
-            {{- if .Values.amnezia.enabled }}
+            {{- if and .Values.amnezia.enabled (or .Values.amnezia.server.headerProtectionKey .Values.amnezia.server.existingSecret) }}
             - name: WG_AMNEZIA_HEADER_PROTECTION_KEY
               valueFrom:
                 secretKeyRef:

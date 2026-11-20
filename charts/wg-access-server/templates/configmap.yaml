@@ -1,6 +1,3 @@
-{{- if and .Values.amnezia.enabled (not .Values.amnezia.server.headerProtectionKey) (not .Values.amnezia.server.existingSecret) }}
-{{- fail "amnezia.enabled needs a header protection key: set amnezia.server.headerProtectionKey or amnezia.server.existingSecret" }}
-{{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
