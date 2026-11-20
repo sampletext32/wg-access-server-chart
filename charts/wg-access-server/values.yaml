@@ -157,12 +157,13 @@ wireguard:
 
 # AmneziaWG is the obfuscating WireGuard fork this chart's image speaks. When
 # enabled, the profile below is rendered into config.yaml and the header
-# protection key is delivered through a Secret. The shared and client values
-# have to agree with every client, so set them once and keep them: changing
-# them means every device has to be enrolled again.
+# protection key is delivered through a Secret. The shared values have to agree
+# with every client, so set them once and keep them: changing them means every
+# client configuration has to be downloaded again.
 amnezia:
   enabled: false
-  # Values the server's interface and every client must agree on.
+  # Values the server's interface and every client must agree on: they change
+  # what a receiver accepts, not just what the sender does.
   shared:
     s1: 0
     s2: 0
@@ -172,6 +173,14 @@ amnezia:
     h2: ""
     h3: ""
     h4: ""
+    # Pad every packet to a random size below the largest one seen. Costs
+    # roughly twice the bandwidth on small packets.
+    randomTrailers: false
+    # Never send cookie replies, which removes one packet type from the
+    # fingerprint.
+    disableCookies: false
+    # Random per-packet padding ("10-20"); needs randomTrailers as well.
+    contentPaddingAddition: ""
   # Values only a client configuration carries.
   client:
     jc: 0
@@ -182,14 +191,14 @@ amnezia:
     i3: ""
     i4: ""
     i5: ""
-    contentPaddingAddition: ""
     rekeyAfterTime: ""
     rekeyTimeout: ""
     rejectAfterTime: ""
     keepaliveTimeout: ""
     maxHandshakeAttempts: ""
-  # The header protection key stays on the server and must be stable;
-  # generate it with `awg genkey` and keep it, e.g. in an existing Secret.
+  # The header protection key is kept like a secret on the server, but every
+  # client needs it: AmneziaWG encrypts the packet header with it. Generate it
+  # with `awg genkey` and keep it stable, e.g. in an existing Secret.
   server:
     existingSecret: ""
     secretRefKeys:
