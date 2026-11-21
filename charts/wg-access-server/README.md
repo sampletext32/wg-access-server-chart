@@ -129,7 +129,7 @@ ingress:
 | amnezia.server.headerProtectionKey | string | `""` | 32-byte base64 key, e.g. from `awg genkey`. Optional: leave it (and `existingSecret`) empty for a profile without header protection, which is what a client that does not know the key in its configuration file needs. Every client configuration contains it when set - a client without it cannot read a single packet. Changing it means every client configuration has to be downloaded again. |
 | amnezia.server.existingSecret | string | `""` | Use an existing Secret for the header protection key. |
 | amnezia.server.secretRefKeys.headerProtectionKey | string | `"headerProtectionKey"` | Secret key that holds the header protection key. |
-| mountKernelModules | bool | `true` | Mount the host's `/lib/modules`. Needed when the container loads kernel modules (iptables); AmneziaWG runs in userspace and does not need it. |
+| mountKernelModules | bool | `true` | Mount the host's `/lib/modules`. Needed when the container loads kernel modules (iptables); the userspace AmneziaWG dataplane this image runs does not need it. AmneziaWG's own kernel module is a separate dataplane and is not supported by this image yet. |
 | storage.enabled | bool | `false` |  |
 | storage.uri | string | `""` | A storage backend connection string |
 | storage.existingSecret | string | `""` | Use existing storage secret |

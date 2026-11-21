@@ -256,7 +256,9 @@ kubeTargetVersionOverride: ""
 
 hostNetwork: false
 # Mount the host's /lib/modules. Needed when the container has to load kernel
-# modules (e.g. iptables); AmneziaWG runs in userspace and does not need it.
+# modules (e.g. iptables); the userspace AmneziaWG dataplane this image runs
+# does not need it. AmneziaWG's own kernel module is a separate dataplane and
+# is not supported by this image yet.
 mountKernelModules: true
 
 imagePullSecrets: []
@@ -278,6 +280,12 @@ strategy:
   # the deployment strategy type will default to "Recreate" when persistence is enabled
   # or "RollingUpdate" when persistence is not enabled.
   # type: Recreate
+  # Passed to the Deployment as-is when type is RollingUpdate. maxSurge 0 is
+  # what a release with a required podAntiAffinity needs: a surge pod would have
+  # no node to land on and the rollout would never finish.
+  rollingUpdate: {}
+  # maxSurge: 0
+  # maxUnavailable: 1
 
 # Extra labels to add to the pod template, merged alongside the chart's own
 # selector labels. Useful for e.g. giving a common label across multiple

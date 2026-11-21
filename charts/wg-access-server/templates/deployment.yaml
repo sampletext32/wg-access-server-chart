@@ -13,6 +13,10 @@ spec:
     {{- else }}
     type: {{ .Values.strategy.type | default "RollingUpdate" | quote }}
     {{- end }}
+    {{- with .Values.strategy.rollingUpdate }}
+    rollingUpdate:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   selector:
     matchLabels:
       {{- include "wg-access-server.selectorLabels" . | nindent 6 }}
