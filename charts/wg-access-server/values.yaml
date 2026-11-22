@@ -255,10 +255,11 @@ fullnameOverride: ""
 kubeTargetVersionOverride: ""
 
 hostNetwork: false
-# Mount the host's /lib/modules. Needed when the container has to load kernel
-# modules (e.g. iptables); the userspace AmneziaWG dataplane this image runs
-# does not need it. AmneziaWG's own kernel module is a separate dataplane and
-# is not supported by this image yet.
+# Mount the host's /lib/modules. Needed only when the container has to load
+# kernel modules itself (e.g. iptables). The AmneziaWG dataplane uses the
+# node's amneziawg module when it is loaded and falls back to the embedded
+# userspace device otherwise; the container never loads the module, so this
+# mount is not needed for either.
 mountKernelModules: true
 
 imagePullSecrets: []
