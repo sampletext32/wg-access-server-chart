@@ -1,3 +1,5 @@
+> **AmneziaWG fork.** This is the chart for the AmneziaWG fork of wg-access-server: it renders the `amnezia` profile and the header protection key into the server configuration, and the image it ships runs the AmneziaWG kernel or userspace dataplane. Install it from this repository (or a local checkout), not from the upstream chart repository. The chart itself is otherwise upstream's.
+
 # wg-access-server - Helm Chart Repository
 
 This repository contains the Helm Chart files for the [wg-access-server](https://github.com/freifunkMUC/wg-access-server) project.
