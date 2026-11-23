@@ -133,3 +133,15 @@ Return AmneziaWG header protection Secret Name
     {{- include "wg-access-server.name" . -}}
 {{- end -}}
 {{- end -}}
+
+
+{{/*
+Return VLESS REALITY key Secret Name
+*/}}
+{{- define "wg-access-server.vlessSecretName" -}}
+{{- if .Values.vless.server.existingSecret -}}
+    {{- .Values.vless.server.existingSecret -}}
+{{- else -}}
+    {{- include "wg-access-server.name" . -}}
+{{- end -}}
+{{- end -}}

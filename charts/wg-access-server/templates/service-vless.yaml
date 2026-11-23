@@ -1,0 +1,24 @@
+{{- if .Values.vless.enabled -}}
+{{- $fullName := include "wg-access-server.name" . -}}
+# The VLESS port is published inside the cluster only: clients reach it through
+# traefik, which passes the TLS bytes through to this Service.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-vless
+  labels:
+    {{- include "wg-access-server.labels" . | nindent 4 }}
+  {{- if .Values.vless.service.annotations }}
+  annotations:
+{{ toYaml .Values.vless.service.annotations | indent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.vless.service.type }}
+  ports:
+    - name: vless
+      port: {{ .Values.vless.service.port }}
+      targetPort: {{ .Values.vless.listenPort }}
+      protocol: TCP
+  selector:
+    {{- include "wg-access-server.selectorLabels" . | nindent 4 }}
+{{- end }}

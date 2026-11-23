@@ -1,0 +1,27 @@
+{{- if and .Values.vless.enabled .Values.vless.traefik.enabled -}}
+{{- $fullName := include "wg-access-server.name" . -}}
+# REALITY owns the TLS handshake: traefik only reads the SNI to decide where the
+# connection goes, and passes the bytes through untouched. The cover host is the
+# value clients send as their SNI and the value Xray accepts, so the match is
+# exact - a wildcard would take over names this server does not pretend to be.
+#
+# TCP routers are evaluated before HTTP routers on the same entrypoint, so an
+# existing HTTPS site is unaffected as long as no host rule names this SNI.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ $fullName }}-vless
+  labels:
+    {{- include "wg-access-server.labels" . | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.vless.traefik.ingressClassName }}
+  entryPoints:
+    - {{ .Values.vless.traefik.entryPoint }}
+  routes:
+    - match: HostSNI(`{{ .Values.vless.coverHost }}`)
+      services:
+        - name: {{ $fullName }}-vless
+          port: {{ .Values.vless.service.port }}
+  tls:
+    passthrough: true
+{{- end }}

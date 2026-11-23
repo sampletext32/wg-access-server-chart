@@ -204,6 +204,63 @@ amnezia:
     secretRefKeys:
       headerProtectionKey: "headerProtectionKey"
     headerProtectionKey: ""
+
+# VLESS over REALITY: the second protocol, served by Xray next to AmneziaWG.
+# Every device gets a credential for both, and one configuration carries both.
+#
+# It is exposed through traefik rather than its own LoadBalancer: the
+# IngressRouteTCP below claims the cover host's SNI on the HTTPS entrypoint and
+# passes the TLS bytes through, so Xray terminates REALITY itself and the port
+# that is already open (443) is the one that is used.
+#
+# Two things have to be true before enabling it:
+#   - coverHost is a real HTTPS site that is not this server. REALITY hands an
+#     unauthenticated handshake to it, so a prober must see that site.
+#   - traefik serves the entrypoint below. One cover host per cluster: two
+#     releases cannot claim the same SNI.
+vless:
+  enabled: false
+  # Port inside the pod. Not published; the Service maps the public port to it.
+  listenPort: 10443
+  # Loopback port of Xray's management API (users, counters).
+  apiPort: 10085
+  # What clients dial: the DNS name that resolves to the ingress, and the port.
+  publicHost: ""
+  # What client configurations dial, when set. The mobile app starts its local
+  # Xray inside the tunnel it just created, so resolving a name there needs the
+  # connection it is resolving for; an address breaks that circle. The name
+  # above stays for display.
+  publicIP: ""
+  publicPort: 443
+  # What the server pretends to be: the client's SNI and the traefik rule.
+  coverHost: ""
+  # REALITY short id, hex, up to 16 characters. Keep it stable: it is in every
+  # client configuration.
+  shortId: ""
+  flow: "xtls-rprx-vision"
+  fingerprint: firefox
+  # What the Xray process writes to its own log. warning (the default) reports
+  # a process that cannot start or a configuration it rejects; info also names
+  # every accepted connection, which is what tells "the client never dialled"
+  # apart from "the client dialled and the handshake failed".
+  logLevel: warning
+  alpn:
+    - h2
+  server:
+    # REALITY private key, base64url, from `xray x25519`. The public half is
+    # derived by the server, so only this one is stored.
+    existingSecret: ""
+    secretRefKeys:
+      realityPrivateKey: "realityPrivateKey"
+    realityPrivateKey: ""
+  service:
+    type: ClusterIP
+    port: 443
+  traefik:
+    enabled: true
+    ingressClassName: traefik
+    entryPoint: websecure
+
 storage:
   enabled: false
   uri: ""
