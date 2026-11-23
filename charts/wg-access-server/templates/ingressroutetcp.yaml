@@ -16,7 +16,9 @@ metadata:
 spec:
   ingressClassName: {{ .Values.vless.traefik.ingressClassName }}
   entryPoints:
-    - {{ .Values.vless.traefik.entryPoint }}
+    {{- range .Values.vless.traefik.entryPoints }}
+    - {{ . }}
+    {{- end }}
   routes:
     - match: HostSNI(`{{ .Values.vless.coverHost }}`)
       services:

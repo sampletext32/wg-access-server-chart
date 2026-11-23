@@ -120,8 +120,6 @@ spec:
               value: {{ .Values.vless.fingerprint | quote }}
             - name: WG_VLESS_LOG_LEVEL
               value: {{ .Values.vless.logLevel | default "warning" | quote }}
-            - name: WG_VLESS_ALPN
-              value: {{ join "," .Values.vless.alpn | quote }}
             {{- if or .Values.vless.server.realityPrivateKey .Values.vless.server.existingSecret }}
             - name: WG_VLESS_REALITY_PRIVATE_KEY
               valueFrom:

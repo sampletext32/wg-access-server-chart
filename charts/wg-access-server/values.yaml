@@ -224,7 +224,9 @@ vless:
   listenPort: 10443
   # Loopback port of Xray's management API (users, counters).
   apiPort: 10085
-  # What clients dial: the DNS name that resolves to the ingress, and the port.
+  # The name people see for the server, and the name the VLESS host resolves
+  # to. It is not what clients necessarily dial: see publicIP. One of
+  # publicHost/publicIP has to be set when vless is enabled.
   publicHost: ""
   # What client configurations dial, when set. The mobile app starts its local
   # Xray inside the tunnel it just created, so resolving a name there needs the
@@ -244,8 +246,6 @@ vless:
   # every accepted connection, which is what tells "the client never dialled"
   # apart from "the client dialled and the handshake failed".
   logLevel: warning
-  alpn:
-    - h2
   server:
     # REALITY private key, base64url, from `xray x25519`. The public half is
     # derived by the server, so only this one is stored.
@@ -259,7 +259,10 @@ vless:
   traefik:
     enabled: true
     ingressClassName: traefik
-    entryPoint: websecure
+    # Entry points the IngressRouteTCP is attached to. The cover host's SNI is
+    # claimed on each of them; normally just the HTTPS one.
+    entryPoints:
+      - websecure
 
 storage:
   enabled: false
